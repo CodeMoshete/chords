@@ -3,19 +3,19 @@
 public class Constants
 {
     public static readonly List<float> STRING_POSITIONS_X = new List<float>(new float[]{
-        54.5f,
-        33f,
-        10.7f,
-        -11.2f,
-        -33f,
-        -55f,
+        -36.7f,
+        -16.2f,
+        4.89f,
+        26.02f,
+        47.16f,
+        68.14f,
     });
 
     public static readonly List<float> FRET_POSITIONS_Y = new List<float>(new float[]{
-        54.3f,
-        28f,
-        0f,
-        -28f,
-        -54.8f
+        34.5f,
+        6.8f,
+        -20.5f,
+        -47.4f,
+        -76f
     });
 }
