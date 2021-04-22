@@ -1,9 +1,19 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ChordDiagram : MonoBehaviour
 {
+    public GameObject SetupPanel;
+    public GameObject DiagramPanel;
+
+    // Setup Panel
+    public InputField ChordNameInput;
+    public List<InputField> StringValueInputs;
+    public Button FinishButton;
+
+    // Diagram Panel
     public Text ChordNameField;
     public GameObject BaseBoard;
     public Transform DotsContainer;
@@ -12,9 +22,63 @@ public class ChordDiagram : MonoBehaviour
     public GameObject ChordDotTemplate;
     public Text FretNumLabelTop;
     public Text FretNumLabelBottom;
+    public Button DeleteButton;
+
+    private RectTransform rectTransform;
+
+    private void Start()
+    {
+        rectTransform = GetComponent<RectTransform>();
+        DeleteButton.onClick.AddListener(RemoveFromList);
+        DisplaySetupPanel();
+    }
+
+    private void Update()
+    {
+        Vector3 testPos = rectTransform.TransformPoint(new Vector3(rectTransform.rect.x, rectTransform.rect.y, 0f));
+        Vector3 testPos2 = rectTransform.TransformPoint(new Vector3(rectTransform.rect.x + rectTransform.rect.width, 
+            rectTransform.rect.y + rectTransform.rect.height, 0f));
+        Vector3 mousePos = Input.mousePosition;
+        bool isMouseHovering = mousePos.x > testPos.x && mousePos.x < testPos2.x && 
+            mousePos.y > testPos.y && mousePos.y < testPos2.y;
+        //Debug.Log(testPos.ToString() + " " + testPos2.ToString() + " : " + Input.mousePosition.ToString() + " " + isMouseHovering);
+        DeleteButton.gameObject.SetActive(isMouseHovering);
+    }
+
+    public void DisplaySetupPanel()
+    {
+        SetupPanel.SetActive(true);
+        DiagramPanel.SetActive(false);
+
+        FinishButton.onClick.AddListener(FinishAndDisplayChord);
+    }
+
+    private void FinishAndDisplayChord()
+    {
+        Chord chord = new Chord(
+            ChordNameInput.text,
+            GetStringVal(StringValueInputs[0].text),
+            GetStringVal(StringValueInputs[1].text),
+            GetStringVal(StringValueInputs[2].text),
+            GetStringVal(StringValueInputs[3].text),
+            GetStringVal(StringValueInputs[4].text),
+            GetStringVal(StringValueInputs[5].text));
+
+        DisplayChord(chord);
+    }
+
+    private int GetStringVal(string input)
+    {
+        int returnVal;
+        int.TryParse(input, out returnVal);
+        return returnVal;
+    }
 
     public void DisplayChord(Chord chord)
     {
+        SetupPanel.SetActive(false);
+        DiagramPanel.SetActive(true);
+
         BaseBoard.SetActive(chord.FirstFretNum == 1);
         ChordNameField.text = chord.ChordName;
 
@@ -62,5 +126,11 @@ public class ChordDiagram : MonoBehaviour
             Constants.FRET_POSITIONS_Y[fretNum - 1]);
         GameObject dot = Instantiate(ChordDotTemplate, transform);
         dot.transform.localPosition = spawnPos;
+    }
+
+    private void RemoveFromList()
+    {
+        transform.SetParent(null);
+        GameObject.Destroy(gameObject);
     }
 }

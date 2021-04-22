@@ -1,12 +1,20 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class Engine : MonoBehaviour
 {
-    public ChordDiagram Chord;
+    public Button AddNewButton;
+    public GameObject ChordDiagramTemplate;
+    public Transform ScrollContainer;
 
     private void Start()
     {
-        Chord chord = new Chord("Asus2add13", 5, -1, 0, 4, 5, 0);
-        Chord.DisplayChord(chord);
+        AddNewButton.onClick.AddListener(AddNewChord);
+    }
+
+    private void AddNewChord()
+    {
+        GameObject newDiagram = Instantiate<GameObject>(ChordDiagramTemplate, ScrollContainer);
+        newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 2);
     }
 }
