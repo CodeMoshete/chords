@@ -1,14 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class Chord
 {
     private List<int> stringValues;
     public List<int> NormalizedStringValues;
-    public string ChordName { get; private set; }
-    public int FirstFretNum { get; private set; }
-    public int LowestFretIndex { get; private set; }
-    public int LowestFretNum { get; private set; }
+
+    public string ChordName;
+    public int FirstFretNum;
+    public int LowestFretIndex;
+    public int LowestFretNum;
+
+    public bool isInitialized;
 
     public Chord(string chordName, int firstString, int secondString, int thirdString,
         int fourthString, int fifthString, int sixthString)
@@ -62,5 +67,7 @@ public class Chord
         }
         NormalizedStringValues.Reverse();
         Debug.Log("done");
+
+        isInitialized = true;
     }
 }

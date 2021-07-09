@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -23,14 +24,21 @@ public class ChordDiagram : MonoBehaviour
     public Text FretNumLabelTop;
     public Text FretNumLabelBottom;
     public Button DeleteButton;
+    public Chord CurrentChord;
 
     private RectTransform rectTransform;
+    private Action<ChordDiagram> onChordRemoved;
 
     private void Start()
     {
         rectTransform = GetComponent<RectTransform>();
         DeleteButton.onClick.AddListener(RemoveFromList);
         DisplaySetupPanel();
+    }
+
+    public void Initialize(Action<ChordDiagram> onChordRemoved)
+    {
+        this.onChordRemoved = onChordRemoved;
     }
 
     private void Update()
@@ -47,10 +55,12 @@ public class ChordDiagram : MonoBehaviour
 
     public void DisplaySetupPanel()
     {
-        SetupPanel.SetActive(true);
-        DiagramPanel.SetActive(false);
-
-        FinishButton.onClick.AddListener(FinishAndDisplayChord);
+        if (!CurrentChord.isInitialized)
+        {
+            SetupPanel.SetActive(true);
+            DiagramPanel.SetActive(false);
+            FinishButton.onClick.AddListener(FinishAndDisplayChord);
+        }
     }
 
     private void FinishAndDisplayChord()
@@ -76,6 +86,7 @@ public class ChordDiagram : MonoBehaviour
 
     public void DisplayChord(Chord chord)
     {
+        CurrentChord = chord;
         SetupPanel.SetActive(false);
         DiagramPanel.SetActive(true);
 
@@ -130,6 +141,7 @@ public class ChordDiagram : MonoBehaviour
 
     private void RemoveFromList()
     {
+        onChordRemoved(this);
         transform.SetParent(null);
         GameObject.Destroy(gameObject);
     }
