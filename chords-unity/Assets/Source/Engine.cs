@@ -18,6 +18,7 @@ public class Engine : MonoBehaviour
     public WebRequestManager WebRequestManager;
 
     private List<ChordDiagram> chords;
+    private string currentSheetName;
 
     private void Start()
     {
@@ -75,36 +76,42 @@ public class Engine : MonoBehaviour
 
     private void SaveCurrentChords(string sheetName)
     {
-        WebRequestManager.GetData<ChordSheetCollection>((sheetCollection) => 
+        currentSheetName = sheetName;
+        WebRequestManager.GetData<ChordSheetCollection>(OnSheetsRetrievedForSave);
+    }
+
+    private void OnSheetsRetrievedForSave(ChordSheetCollection sheetCollection)
+    {
+        ChordSheet newSheet = new ChordSheet();
+        newSheet.Chords = new List<Chord>();
+        for (int i = 0, count = chords.Count; i < count; ++i)
         {
-            ChordSheet newSheet = new ChordSheet();
-            newSheet.Chords = new List<Chord>();
-            for (int i = 0, count = chords.Count; i < count; ++i)
-            {
-                newSheet.Chords.Add(chords[i].CurrentChord);
-            }
+            newSheet.Chords.Add(chords[i].CurrentChord);
+        }
 
-            if (sheetCollection == null)
-            {
-                sheetCollection = ChordSheetCollection.Create();
-            }
+        if (sheetCollection == null)
+        {
+            sheetCollection = ChordSheetCollection.Create();
+        }
 
-            int sheetIndex = sheetCollection.SheetNames.IndexOf(sheetName);
-            if (sheetIndex < 0)
-            {
-                sheetCollection.SheetNames.Add(sheetName);
-                sheetCollection.Sheets.Add(newSheet);
-            }
-            else
-            {
-                sheetCollection.Sheets[sheetIndex] = newSheet;
-            }
+        int sheetIndex = sheetCollection.SheetNames.IndexOf(currentSheetName);
+        if (sheetIndex < 0)
+        {
+            sheetCollection.SheetNames.Add(currentSheetName);
+            sheetCollection.Sheets.Add(newSheet);
+        }
+        else
+        {
+            sheetCollection.Sheets[sheetIndex] = newSheet;
+        }
 
-            WebRequestManager.PostData(JsonUtility.ToJson(sheetCollection), () =>
-            {
-                SavePanel.CloseWindow();
-            });
-        });
+        string sheetJson = JsonUtility.ToJson(sheetCollection);
+        WebRequestManager.PostData(sheetJson, OnSaveComplete);
+    }
+
+    private void OnSaveComplete()
+    {
+        SavePanel.CloseWindow();
     }
 
     private void LoadChords(ChordSheet sheet)

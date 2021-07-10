@@ -24,15 +24,24 @@ public class ChordDiagram : MonoBehaviour
     public Text FretNumLabelTop;
     public Text FretNumLabelBottom;
     public Button DeleteButton;
+    public Button EditButton;
     public Chord CurrentChord;
 
+    private List<GameObject> dots;
     private RectTransform rectTransform;
     private Action<ChordDiagram> onChordRemoved;
+
+    public ChordDiagram()
+    {
+        dots = new List<GameObject>();
+    }
 
     private void Start()
     {
         rectTransform = GetComponent<RectTransform>();
         DeleteButton.onClick.AddListener(RemoveFromList);
+        EditButton.onClick.AddListener(EditChord);
+        FinishButton.onClick.AddListener(FinishAndDisplayChord);
         DisplaySetupPanel();
     }
 
@@ -51,6 +60,7 @@ public class ChordDiagram : MonoBehaviour
             mousePos.y > testPos.y && mousePos.y < testPos2.y;
         //Debug.Log(testPos.ToString() + " " + testPos2.ToString() + " : " + Input.mousePosition.ToString() + " " + isMouseHovering);
         DeleteButton.gameObject.SetActive(isMouseHovering);
+        EditButton.gameObject.SetActive(isMouseHovering);
     }
 
     public void DisplaySetupPanel()
@@ -59,7 +69,9 @@ public class ChordDiagram : MonoBehaviour
         {
             SetupPanel.SetActive(true);
             DiagramPanel.SetActive(false);
-            FinishButton.onClick.AddListener(FinishAndDisplayChord);
+
+            EventSystem.current.SetSelectedGameObject(StringValueInputs[0].gameObject, null);
+            StringValueInputs[0].OnPointerClick(null);
         }
     }
 
@@ -137,6 +149,24 @@ public class ChordDiagram : MonoBehaviour
             Constants.FRET_POSITIONS_Y[fretNum - 1]);
         GameObject dot = Instantiate(ChordDotTemplate, transform);
         dot.transform.localPosition = spawnPos;
+        dots.Add(dot);
+    }
+
+    private void EditChord()
+    {
+        for (int i = 0, count = dots.Count; i < count; ++i)
+        {
+            Destroy(dots[i]);
+        }
+
+        for (int i = 0, count = CurrentChord.StringValues.Count; i < count; ++i)
+        {
+            StringValueInputs[i].text = CurrentChord.StringValues[i].ToString();
+        }
+
+        ChordNameInput.text = CurrentChord.ChordName;
+        SetupPanel.SetActive(true);
+        DiagramPanel.SetActive(false);
     }
 
     private void RemoveFromList()

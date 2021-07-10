@@ -5,8 +5,29 @@ using UnityEngine;
 [Serializable]
 public class Chord
 {
-    private List<int> stringValues;
-    public List<int> NormalizedStringValues;
+    public List<int> StringValues;
+
+    private List<int> normalizedStringValues;
+    public List<int> NormalizedStringValues
+    {
+        get
+        {
+            if (normalizedStringValues == null)
+            {
+                normalizedStringValues = new List<int>();
+                for (int i = 0, count = StringValues.Count; i < count; ++i)
+                {
+                    int newVal = StringValues[i] > 0 ?
+                        StringValues[i] - (FirstFretNum - 1) :
+                        StringValues[i];
+
+                    normalizedStringValues.Add(newVal);
+                }
+                normalizedStringValues.Reverse();
+            }
+            return normalizedStringValues;
+        }
+    }
 
     public string ChordName;
     public int FirstFretNum;
@@ -20,7 +41,7 @@ public class Chord
     {
         ChordName = chordName;
 
-        stringValues = new List<int>(new int[] {
+        StringValues = new List<int>(new int[] {
             firstString,
             secondString,
             thirdString,
@@ -29,20 +50,18 @@ public class Chord
             sixthString
         });
 
-        NormalizedStringValues = new List<int>();
-
         int highestFret = 0;
         LowestFretNum = 100;
 
-        for (int i = 0, count = stringValues.Count; i < count; ++i)
+        for (int i = 0, count = StringValues.Count; i < count; ++i)
         {
-            int stringVal = stringValues[i];
+            int stringVal = StringValues[i];
             if (stringVal > highestFret)
             {
                 highestFret = stringVal;
             }
 
-            if (stringVal > 0 && stringValues[i] < LowestFretNum)
+            if (stringVal > 0 && StringValues[i] < LowestFretNum)
             {
                 LowestFretNum = stringVal;
             }
@@ -59,13 +78,7 @@ public class Chord
             FirstFretNum = difference < 3 ? LowestFretNum - 1 : LowestFretNum;
             LowestFretIndex = difference < 3 ? 2 : 1;
         }
-
-        for (int i = 0, count = stringValues.Count; i < count; ++i)
-        {
-            int newVal = stringValues[i] > 0 ? stringValues[i] - (FirstFretNum - 1) : stringValues[i];
-            NormalizedStringValues.Add(newVal);
-        }
-        NormalizedStringValues.Reverse();
+        
         Debug.Log("done");
 
         isInitialized = true;
