@@ -36,7 +36,7 @@ public class Engine : MonoBehaviour
         GameObject newDiagram = Instantiate<GameObject>(ChordDiagramTemplate, ScrollContainer);
         newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 2);
         ChordDiagram diagram = newDiagram.GetComponent<ChordDiagram>();
-        diagram.Initialize(OnChordRemoved);
+        diagram.Initialize(OnChordRemoved, OnChordDuplicated);
         diagram.DisplayChord(chord);
         chords.Add(diagram);
     }
@@ -46,13 +46,18 @@ public class Engine : MonoBehaviour
         GameObject newDiagram = Instantiate<GameObject>(ChordDiagramTemplate, ScrollContainer);
         newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 2);
         ChordDiagram diagram = newDiagram.GetComponent<ChordDiagram>();
-        diagram.Initialize(OnChordRemoved);
+        diagram.Initialize(OnChordRemoved, OnChordDuplicated);
         chords.Add(diagram);
     }
 
     private void OnChordRemoved(ChordDiagram diagram)
     {
         chords.Remove(diagram);
+    }
+
+    private void OnChordDuplicated(ChordDiagram diagram)
+    {
+        AddNewChord(diagram.CurrentChord);
     }
 
     private void ClearChords()
