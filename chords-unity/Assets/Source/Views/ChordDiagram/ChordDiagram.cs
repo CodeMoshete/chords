@@ -12,6 +12,7 @@ public class ChordDiagram : MonoBehaviour
     // Setup Panel
     public InputField ChordNameInput;
     public List<InputField> StringValueInputs;
+    public List<Button> ToggleOpenButtons;
     public Button FinishButton;
 
     // Diagram Panel
@@ -45,6 +46,12 @@ public class ChordDiagram : MonoBehaviour
         EditButton.onClick.AddListener(EditChord);
         DuplicateButton.onClick.AddListener(DuplicateChord);
         FinishButton.onClick.AddListener(FinishAndDisplayChord);
+
+        for (int i = 0, count = ToggleOpenButtons.Count; i < count; ++i)
+        {
+            SetupToggleOnOffButton(ToggleOpenButtons[i], i);
+        }
+
         DisplaySetupPanel();
     }
 
@@ -160,6 +167,16 @@ public class ChordDiagram : MonoBehaviour
 
     private void EditChord()
     {
+        for (int i = 0, count = OpenStringIcons.Count; i < count; ++i)
+        {
+            OpenStringIcons[i].SetActive(false);
+        }
+
+        for (int i = 0, count = BlockedStringIcons.Count; i < count; ++i)
+        {
+            BlockedStringIcons[i].SetActive(false);
+        }
+
         for (int i = 0, count = dots.Count; i < count; ++i)
         {
             Destroy(dots[i]);
@@ -173,6 +190,22 @@ public class ChordDiagram : MonoBehaviour
         ChordNameInput.text = CurrentChord.ChordName;
         SetupPanel.SetActive(true);
         DiagramPanel.SetActive(false);
+    }
+
+    private void SetupToggleOnOffButton(Button button, int index)
+    {
+        button.onClick.AddListener(() =>
+        {
+            string currentVal = StringValueInputs[index].text;
+            if (currentVal == "-1")
+            {
+                StringValueInputs[index].text = "0";
+            }
+            else
+            {
+                StringValueInputs[index].text = "-1";
+            }
+        });
     }
 
     private void DuplicateChord()
