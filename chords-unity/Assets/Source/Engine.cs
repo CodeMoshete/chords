@@ -84,6 +84,7 @@ public class Engine : MonoBehaviour
     {
         ChordSheet newSheet = new ChordSheet();
         newSheet.Chords = new List<Chord>();
+        newSheet.ElementTypes = new List<string>();
         for (int i = 0, count = chords.Count; i < count; ++i)
         {
             newSheet.Chords.Add(chords[i].CurrentChord);

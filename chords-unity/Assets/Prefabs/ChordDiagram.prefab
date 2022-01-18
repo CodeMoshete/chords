@@ -3979,6 +3979,7 @@ GameObject:
   - component: {fileID: 8331937216361326376}
   - component: {fileID: 8331937216361326375}
   - component: {fileID: 8331937216361326374}
+  - component: {fileID: 6368469804778250314}
   m_Layer: 5
   m_Name: ChordDiagram
   m_TagString: Untagged
@@ -4060,6 +4061,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SetupPanel: {fileID: 5889632214992397867}
   DiagramPanel: {fileID: 695026755030866477}
+  HoverListener: {fileID: 6368469804778250314}
   ChordNameInput: {fileID: 8499244121893750776}
   StringValueInputs:
   - {fileID: 2186861992119719375}
@@ -4093,12 +4095,24 @@ MonoBehaviour:
   DeleteButton: {fileID: 1188163860578341714}
   EditButton: {fileID: 662645729166492729}
   CurrentChord:
-    NormalizedStringValues: 
+    StringValues: 
     ChordName: 
     FirstFretNum: 0
     LowestFretIndex: 0
     LowestFretNum: 0
     isInitialized: 0
+--- !u!114 &6368469804778250314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8331937216361326372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c6ef7b6a65d50f428ca47ba65f86fa4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8807807936823008196
 GameObject:
   m_ObjectHideFlags: 0

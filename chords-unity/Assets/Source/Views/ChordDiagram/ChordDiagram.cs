@@ -8,6 +8,7 @@ public class ChordDiagram : MonoBehaviour
 {
     public GameObject SetupPanel;
     public GameObject DiagramPanel;
+    public UIHoverListener HoverListener;
 
     // Setup Panel
     public InputField ChordNameInput;
@@ -42,6 +43,7 @@ public class ChordDiagram : MonoBehaviour
         DeleteButton.onClick.AddListener(RemoveFromList);
         EditButton.onClick.AddListener(EditChord);
         FinishButton.onClick.AddListener(FinishAndDisplayChord);
+        HoverListener.AddHoverListener(OnHoverStateChanged);
         DisplaySetupPanel();
     }
 
@@ -50,15 +52,8 @@ public class ChordDiagram : MonoBehaviour
         this.onChordRemoved = onChordRemoved;
     }
 
-    private void Update()
+    private void OnHoverStateChanged(bool isMouseHovering)
     {
-        Vector3 testPos = rectTransform.TransformPoint(new Vector3(rectTransform.rect.x, rectTransform.rect.y, 0f));
-        Vector3 testPos2 = rectTransform.TransformPoint(new Vector3(rectTransform.rect.x + rectTransform.rect.width, 
-            rectTransform.rect.y + rectTransform.rect.height, 0f));
-        Vector3 mousePos = Input.mousePosition;
-        bool isMouseHovering = mousePos.x > testPos.x && mousePos.x < testPos2.x && 
-            mousePos.y > testPos.y && mousePos.y < testPos2.y;
-        //Debug.Log(testPos.ToString() + " " + testPos2.ToString() + " : " + Input.mousePosition.ToString() + " " + isMouseHovering);
         DeleteButton.gameObject.SetActive(isMouseHovering);
         EditButton.gameObject.SetActive(isMouseHovering);
     }
@@ -70,8 +65,7 @@ public class ChordDiagram : MonoBehaviour
             SetupPanel.SetActive(true);
             DiagramPanel.SetActive(false);
 
-            EventSystem.current.SetSelectedGameObject(StringValueInputs[0].gameObject, null);
-            StringValueInputs[0].OnPointerClick(null);
+            EventSystem.current.SetSelectedGameObject(StringValueInputs[5].gameObject, null);
         }
     }
 
@@ -174,5 +168,10 @@ public class ChordDiagram : MonoBehaviour
         onChordRemoved(this);
         transform.SetParent(null);
         GameObject.Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        HoverListener.RemoveHoverListener(OnHoverStateChanged);
     }
 }
