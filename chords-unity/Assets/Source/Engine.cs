@@ -34,7 +34,7 @@ public class Engine : MonoBehaviour
         LoadPanel.Initialize(LoadElements);
         LoadButton.onClick.AddListener(ShowLoadPanel);
         SaveButton.onClick.AddListener(ShowSavePanel);
-        ClearButton.onClick.AddListener(ClearChords);
+        ClearButton.onClick.AddListener(ClearAll);
     }
 
     private void AddNewElement()
@@ -100,6 +100,12 @@ public class Engine : MonoBehaviour
         AddNewMelody(diagram.CurrentMelody);
     }
 
+    private void ClearAll()
+    {
+        ClearMelodies();
+        ClearChords();
+    }
+
     private void ClearChords()
     {
         for (int i = 0, count = chords.Count; i < count; ++i)
@@ -107,6 +113,15 @@ public class Engine : MonoBehaviour
             Destroy(chords[i].gameObject);
         }
         chords = new List<ChordDiagram>();
+    }
+
+    private void ClearMelodies()
+    {
+        for (int i = 0, count = melodies.Count; i < count; ++i)
+        {
+            Destroy(melodies[i].gameObject);
+        }
+        melodies = new List<MelodyDiagram>();
     }
 
     private void ShowLoadPanel()
@@ -129,10 +144,30 @@ public class Engine : MonoBehaviour
     {
         ChordSheet newSheet = new ChordSheet();
         newSheet.Chords = new List<Chord>();
+        newSheet.MelodyDiagrams = new List<MelodyDiagramModel>();
         newSheet.ElementTypesInt = new List<int>();
         for (int i = 0, count = chords.Count; i < count; ++i)
         {
             newSheet.Chords.Add(chords[i].CurrentChord);
+        }
+
+        for (int i = 0, count = melodies.Count; i < count; ++i)
+        {
+            newSheet.MelodyDiagrams.Add(melodies[i].GetModel());
+        }
+
+        int numChildren = ScrollContainer.childCount;
+        for (int i = 0; i < numChildren; ++i)
+        {
+            Transform child = ScrollContainer.GetChild(i);
+            if (child.GetComponent<ChordDiagram>() != null)
+            {
+                newSheet.ElementTypesInt.Add((int)ElementType.Chord);
+            }
+            else if (child.GetComponent<MelodyDiagram>() != null)
+            {
+                newSheet.ElementTypesInt.Add((int)ElementType.Melody);
+            }
         }
 
         if (sheetCollection == null)
@@ -171,6 +206,7 @@ public class Engine : MonoBehaviour
     private void LoadElements(ChordSheet sheet)
     {
         ClearChords();
+        ClearMelodies();
         if ((sheet.ElementTypes == null || sheet.ElementTypes.Count == 0) && sheet.Chords.Count > 0)
         {
             LoadLegacyElement(sheet);

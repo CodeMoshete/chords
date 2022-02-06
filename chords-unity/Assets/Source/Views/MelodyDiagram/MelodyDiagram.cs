@@ -13,24 +13,13 @@ public class MelodyDiagram : MonoBehaviour
     private MelodyDot selectedDot;
 
     public MelodyDiagramModel CurrentMelody { get; private set; }
-    
+
+    public UIHoverListener hoverListener;
     public GameObject FretEnterPanel;
     public InputField FretInput;
     public Button SetButton;
     public Button CancelButton;
-
-    private void Start()
-    {
-        melodyDots = new List<MelodyDot>(gameObject.GetComponentsInChildren<MelodyDot>());
-        for (int i = 0, count = melodyDots.Count; i < count; ++i)
-        {
-            melodyDots[i].OnDotPressed = OnDotPressed;
-            melodyDots[i].OnDotDeleted = OnDotDeleted;
-        }
-
-        SetButton.onClick.AddListener(SetFretButtonPressed);
-        CancelButton.onClick.AddListener(CancelFretButtonPressed);
-    }
+    public Button DeleteButton;
 
     private void Update()
     {
@@ -49,8 +38,27 @@ public class MelodyDiagram : MonoBehaviour
 
     public void Initialize(Action<MelodyDiagram> onMelodyRemoved, Action<MelodyDiagram> onMelodyDuplicated)
     {
+        melodyDots = new List<MelodyDot>(gameObject.GetComponentsInChildren<MelodyDot>());
+        for (int i = 0, count = melodyDots.Count; i < count; ++i)
+        {
+            melodyDots[i].OnDotPressed = OnDotPressed;
+            melodyDots[i].OnDotDeleted = OnDotDeleted;
+        }
+
+        SetButton.onClick.AddListener(SetFretButtonPressed);
+        CancelButton.onClick.AddListener(CancelFretButtonPressed);
+        DeleteButton.onClick.AddListener(DeleteButtonPressed);
+
+        hoverListener.AddHoverListener(showDeleteButton);
+        showDeleteButton(false);
+
         this.onMelodyRemoved = onMelodyRemoved;
         this.onMelodyDuplicated = onMelodyDuplicated;
+    }
+
+    private void showDeleteButton(bool show)
+    {
+        DeleteButton.gameObject.SetActive(show);
     }
 
     public void DisplayMelody(MelodyDiagramModel melody)
@@ -109,5 +117,11 @@ public class MelodyDiagram : MonoBehaviour
     {
         Debug.Log("Dot Deleted: " + dot.name);
         dot.SetActive(false);
+    }
+
+    private void DeleteButtonPressed()
+    {
+        onMelodyRemoved(this);
+        Destroy(gameObject);
     }
 }

@@ -110,6 +110,7 @@ public class ChordDiagram : MonoBehaviour
         CurrentChord = chord;
         SetupPanel.SetActive(false);
         DiagramPanel.SetActive(true);
+        OnHoverStateChanged(false);
 
         BaseBoard.SetActive(chord.FirstFretNum == 1);
         ChordNameField.text = chord.ChordName;

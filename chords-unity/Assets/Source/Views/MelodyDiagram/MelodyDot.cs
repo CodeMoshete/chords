@@ -26,7 +26,7 @@ public class MelodyDot : MonoBehaviour
 
     private void Start()
     {
-        VisContainer.SetActive(false);
+        VisContainer.SetActive(IsActive);
         HoverListener.AddHoverListener(OnHoverStateChanged);
         SetButton.onClick.AddListener(DotPressed);
         DeleteButton.onClick.AddListener(DotDeleted);
