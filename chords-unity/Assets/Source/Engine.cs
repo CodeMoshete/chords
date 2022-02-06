@@ -6,6 +6,7 @@ public class Engine : MonoBehaviour
 {
     public Button AddNewButton;
     public GameObject ChordDiagramTemplate;
+    public GameObject MelodyDiagramTemplate;
     public Transform ScrollContainer;
 
     public Button ClearButton;
@@ -15,26 +16,36 @@ public class Engine : MonoBehaviour
     public LoadPanel LoadPanel;
     public SavePanel SavePanel;
 
+    public ElementSelector ElementSelector;
+
     public WebRequestManager WebRequestManager;
 
     private List<ChordDiagram> chords;
+    private List<MelodyDiagram> melodies;
     private string currentSheetName;
 
     private void Start()
     {
+        ElementSelector.Initialize(AddNewChord, AddNewMelody);
         chords = new List<ChordDiagram>();
-        AddNewButton.onClick.AddListener(AddNewChord);
+        melodies = new List<MelodyDiagram>();
+        AddNewButton.onClick.AddListener(AddNewElement);
         SavePanel.Initialize(SaveCurrentChords);
-        LoadPanel.Initialize(LoadChords);
+        LoadPanel.Initialize(LoadElements);
         LoadButton.onClick.AddListener(ShowLoadPanel);
         SaveButton.onClick.AddListener(ShowSavePanel);
         ClearButton.onClick.AddListener(ClearChords);
     }
 
+    private void AddNewElement()
+    {
+        ElementSelector.ShowElementSelector();
+    }
+
     private void AddNewChord(Chord chord)
     {
         GameObject newDiagram = Instantiate<GameObject>(ChordDiagramTemplate, ScrollContainer);
-        newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 2);
+        newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
         ChordDiagram diagram = newDiagram.GetComponent<ChordDiagram>();
         diagram.Initialize(OnChordRemoved, OnChordDuplicated);
         diagram.DisplayChord(chord);
@@ -44,7 +55,7 @@ public class Engine : MonoBehaviour
     private void AddNewChord()
     {
         GameObject newDiagram = Instantiate<GameObject>(ChordDiagramTemplate, ScrollContainer);
-        newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 2);
+        newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
         ChordDiagram diagram = newDiagram.GetComponent<ChordDiagram>();
         diagram.Initialize(OnChordRemoved, OnChordDuplicated);
         chords.Add(diagram);
@@ -58,6 +69,35 @@ public class Engine : MonoBehaviour
     private void OnChordDuplicated(ChordDiagram diagram)
     {
         AddNewChord(diagram.CurrentChord);
+    }
+
+    private void AddNewMelody(MelodyDiagramModel melody)
+    {
+        GameObject newDiagram = Instantiate<GameObject>(MelodyDiagramTemplate, ScrollContainer);
+        newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
+        MelodyDiagram diagram = newDiagram.GetComponent<MelodyDiagram>();
+        diagram.Initialize(OnMelodyRemoved, OnMelodyDuplicated);
+        diagram.DisplayMelody(melody);
+        melodies.Add(diagram);
+    }
+
+    private void AddNewMelody()
+    {
+        GameObject newDiagram = Instantiate<GameObject>(MelodyDiagramTemplate, ScrollContainer);
+        newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
+        MelodyDiagram diagram = newDiagram.GetComponent<MelodyDiagram>();
+        diagram.Initialize(OnMelodyRemoved, OnMelodyDuplicated);
+        melodies.Add(diagram);
+    }
+
+    private void OnMelodyRemoved(MelodyDiagram diagram)
+    {
+        melodies.Remove(diagram);
+    }
+
+    private void OnMelodyDuplicated(MelodyDiagram diagram)
+    {
+        AddNewMelody(diagram.CurrentMelody);
     }
 
     private void ClearChords()
@@ -89,7 +129,7 @@ public class Engine : MonoBehaviour
     {
         ChordSheet newSheet = new ChordSheet();
         newSheet.Chords = new List<Chord>();
-        newSheet.ElementTypes = new List<string>();
+        newSheet.ElementTypesInt = new List<int>();
         for (int i = 0, count = chords.Count; i < count; ++i)
         {
             newSheet.Chords.Add(chords[i].CurrentChord);
@@ -120,13 +160,41 @@ public class Engine : MonoBehaviour
         SavePanel.CloseWindow();
     }
 
-    private void LoadChords(ChordSheet sheet)
+    private void LoadLegacyElement(ChordSheet sheet)
     {
-        ClearChords();
         for (int i = 0, count = sheet.Chords.Count; i < count; ++i)
         {
             AddNewChord(sheet.Chords[i]);
         }
+    }
+
+    private void LoadElements(ChordSheet sheet)
+    {
+        ClearChords();
+        if ((sheet.ElementTypes == null || sheet.ElementTypes.Count == 0) && sheet.Chords.Count > 0)
+        {
+            LoadLegacyElement(sheet);
+            return;
+        }
+
+        int chordIndex = 0;
+        int melodyIndex = 0;
+        for (int i = 0, count = sheet.ElementTypes.Count; i < count; ++i)
+        {
+            switch (sheet.ElementTypes[i])
+            {
+                case ElementType.Chord:
+                    AddNewChord(sheet.Chords[chordIndex]);
+                    chordIndex++;
+                    break;
+                case ElementType.Melody:
+                    AddNewMelody(sheet.MelodyDiagrams[melodyIndex]);
+                    melodyIndex++;
+                    break;
+            }
+
+        }
+
         LoadPanel.CloseWindow();
     }
 }

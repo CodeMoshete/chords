@@ -1,10 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 
+public enum ElementType
+{
+    Chord,
+    Melody
+}
+
 [Serializable]
 public class ChordSheet
 {
-    public List<string> ElementTypes;
+    private List<ElementType> elementTypes;
+    public List<ElementType> ElementTypes
+    {
+        get
+        {
+            if (elementTypes == null)
+            {
+                elementTypes = new List<ElementType>();
+                if (ElementTypesInt != null)
+                {
+                    for(int i = 0, count = ElementTypesInt.Count; i < count; ++i)
+                    {
+                        elementTypes.Add((ElementType)ElementTypesInt[i]);
+                    }
+                }
+            }
+            return elementTypes;
+        }
+    }
+
+    public List<int> ElementTypesInt;
     public List<Chord> Chords;
     public List<MelodyDiagramModel> MelodyDiagrams;
 }

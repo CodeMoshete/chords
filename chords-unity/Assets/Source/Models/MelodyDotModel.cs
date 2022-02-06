@@ -3,6 +3,6 @@
 [Serializable]
 public class MelodyDotModel
 {
-    public int StringNum;
+    public int FretNum;
     public int SequenceIndex;
 }
