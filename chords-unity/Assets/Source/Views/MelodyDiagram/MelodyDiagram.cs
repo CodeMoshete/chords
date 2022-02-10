@@ -9,6 +9,7 @@ public class MelodyDiagram : MonoBehaviour
 {
     private Action<MelodyDiagram> onMelodyRemoved;
     private Action<MelodyDiagram> onMelodyDuplicated;
+    private Action<Transform, MoveDirection> onElementMoved;
     private List<MelodyDot> melodyDots;
     private MelodyDot selectedDot;
 
@@ -18,6 +19,8 @@ public class MelodyDiagram : MonoBehaviour
     public GameObject FretEnterPanel;
     public InputField FretInput;
     public Button SetButton;
+    public Button MoveLeftButton;
+    public Button MoveRightButton;
     public Button CancelButton;
     public Button DeleteButton;
 
@@ -36,7 +39,10 @@ public class MelodyDiagram : MonoBehaviour
         }
     }
 
-    public void Initialize(Action<MelodyDiagram> onMelodyRemoved, Action<MelodyDiagram> onMelodyDuplicated)
+    public void Initialize(
+        Action<MelodyDiagram> onMelodyRemoved, 
+        Action<MelodyDiagram> onMelodyDuplicated, 
+        Action<Transform, MoveDirection> onElementMoved)
     {
         melodyDots = new List<MelodyDot>(gameObject.GetComponentsInChildren<MelodyDot>());
         for (int i = 0, count = melodyDots.Count; i < count; ++i)
@@ -54,11 +60,18 @@ public class MelodyDiagram : MonoBehaviour
 
         this.onMelodyRemoved = onMelodyRemoved;
         this.onMelodyDuplicated = onMelodyDuplicated;
+
+
+        MoveLeftButton.onClick.AddListener(TriggerMoveLeft);
+        MoveRightButton.onClick.AddListener(TriggerMoveRight);
+        this.onElementMoved = onElementMoved;
     }
 
     private void showDeleteButton(bool show)
     {
         DeleteButton.gameObject.SetActive(show);
+        MoveLeftButton.gameObject.SetActive(show);
+        MoveRightButton.gameObject.SetActive(show);
     }
 
     public void DisplayMelody(MelodyDiagramModel melody)
@@ -111,6 +124,16 @@ public class MelodyDiagram : MonoBehaviour
         Debug.Log("Dot Pressed: " + dot.name);
         FretEnterPanel.SetActive(true);
         EventSystem.current.SetSelectedGameObject(FretInput.gameObject, null);
+    }
+
+    public void TriggerMoveLeft()
+    {
+        onElementMoved(transform, MoveDirection.Left);
+    }
+
+    public void TriggerMoveRight()
+    {
+        onElementMoved(transform, MoveDirection.Right);
     }
 
     private void OnDotDeleted(MelodyDot dot)

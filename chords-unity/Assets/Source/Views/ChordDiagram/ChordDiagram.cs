@@ -28,12 +28,15 @@ public class ChordDiagram : MonoBehaviour
     public Button DeleteButton;
     public Button EditButton;
     public Button DuplicateButton;
+    public Button MoveLeftButton;
+    public Button MoveRightButton;
     public Chord CurrentChord;
 
     private List<GameObject> dots;
     private RectTransform rectTransform;
     private Action<ChordDiagram> onChordRemoved;
     private Action<ChordDiagram> onChordDuplicated;
+    private Action<Transform, MoveDirection> onElementMoved;
 
     public ChordDiagram()
     {
@@ -48,6 +51,8 @@ public class ChordDiagram : MonoBehaviour
         DuplicateButton.onClick.AddListener(DuplicateChord);
         FinishButton.onClick.AddListener(FinishAndDisplayChord);
         HoverListener.AddHoverListener(OnHoverStateChanged);
+        MoveLeftButton.onClick.AddListener(TriggerMoveLeft);
+        MoveRightButton.onClick.AddListener(TriggerMoveRight);
 
         for (int i = 0, count = ToggleOpenButtons.Count; i < count; ++i)
         {
@@ -57,10 +62,14 @@ public class ChordDiagram : MonoBehaviour
         DisplaySetupPanel();
     }
 
-    public void Initialize(Action<ChordDiagram> onChordRemoved, Action<ChordDiagram> onChordDuplicated)
+    public void Initialize(
+        Action<ChordDiagram> onChordRemoved, 
+        Action<ChordDiagram> onChordDuplicated, 
+        Action<Transform, MoveDirection> onElementMoved)
     {
         this.onChordRemoved = onChordRemoved;
         this.onChordDuplicated = onChordDuplicated;
+        this.onElementMoved = onElementMoved;
     }
 
     private void OnHoverStateChanged(bool isMouseHovering)
@@ -69,6 +78,8 @@ public class ChordDiagram : MonoBehaviour
         bool isInDisplayMode = DiagramPanel.activeSelf;
         EditButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
         DuplicateButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
+        MoveLeftButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
+        MoveRightButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
     }
 
     public void DisplaySetupPanel()
@@ -77,6 +88,7 @@ public class ChordDiagram : MonoBehaviour
         {
             SetupPanel.SetActive(true);
             DiagramPanel.SetActive(false);
+            OnHoverStateChanged(false);
 
             EventSystem.current.SetSelectedGameObject(StringValueInputs[5].gameObject, null);
             //EventSystem.current.SetSelectedGameObject(StringValueInputs[0].gameObject, null);
@@ -187,6 +199,7 @@ public class ChordDiagram : MonoBehaviour
         ChordNameInput.text = CurrentChord.ChordName;
         SetupPanel.SetActive(true);
         DiagramPanel.SetActive(false);
+        OnHoverStateChanged(false);
     }
 
     private void SetupToggleOnOffButton(Button button, int index)
@@ -208,6 +221,16 @@ public class ChordDiagram : MonoBehaviour
     private void DuplicateChord()
     {
         onChordDuplicated(this);
+    }
+
+    public void TriggerMoveLeft()
+    {
+        onElementMoved(transform, MoveDirection.Left);
+    }
+
+    public void TriggerMoveRight()
+    {
+        onElementMoved(transform, MoveDirection.Right);
     }
 
     private void RemoveFromList()

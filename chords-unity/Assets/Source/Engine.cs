@@ -47,7 +47,7 @@ public class Engine : MonoBehaviour
         GameObject newDiagram = Instantiate<GameObject>(ChordDiagramTemplate, ScrollContainer);
         newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
         ChordDiagram diagram = newDiagram.GetComponent<ChordDiagram>();
-        diagram.Initialize(OnChordRemoved, OnChordDuplicated);
+        diagram.Initialize(OnChordRemoved, OnChordDuplicated, MoveElement);
         diagram.DisplayChord(chord);
         chords.Add(diagram);
     }
@@ -57,7 +57,7 @@ public class Engine : MonoBehaviour
         GameObject newDiagram = Instantiate<GameObject>(ChordDiagramTemplate, ScrollContainer);
         newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
         ChordDiagram diagram = newDiagram.GetComponent<ChordDiagram>();
-        diagram.Initialize(OnChordRemoved, OnChordDuplicated);
+        diagram.Initialize(OnChordRemoved, OnChordDuplicated, MoveElement);
         chords.Add(diagram);
     }
 
@@ -76,7 +76,7 @@ public class Engine : MonoBehaviour
         GameObject newDiagram = Instantiate<GameObject>(MelodyDiagramTemplate, ScrollContainer);
         newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
         MelodyDiagram diagram = newDiagram.GetComponent<MelodyDiagram>();
-        diagram.Initialize(OnMelodyRemoved, OnMelodyDuplicated);
+        diagram.Initialize(OnMelodyRemoved, OnMelodyDuplicated, MoveElement);
         diagram.DisplayMelody(melody);
         melodies.Add(diagram);
     }
@@ -86,7 +86,7 @@ public class Engine : MonoBehaviour
         GameObject newDiagram = Instantiate<GameObject>(MelodyDiagramTemplate, ScrollContainer);
         newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
         MelodyDiagram diagram = newDiagram.GetComponent<MelodyDiagram>();
-        diagram.Initialize(OnMelodyRemoved, OnMelodyDuplicated);
+        diagram.Initialize(OnMelodyRemoved, OnMelodyDuplicated, MoveElement);
         melodies.Add(diagram);
     }
 
@@ -122,6 +122,20 @@ public class Engine : MonoBehaviour
             Destroy(melodies[i].gameObject);
         }
         melodies = new List<MelodyDiagram>();
+    }
+
+    private void MoveElement(Transform element, MoveDirection direction)
+    {
+        int numSiblings = ScrollContainer.childCount;
+        int currentSiblingIndex = element.GetSiblingIndex();
+        if (direction == MoveDirection.Left && currentSiblingIndex > 0)
+        {
+            element.SetSiblingIndex(currentSiblingIndex - 1);
+        }
+        else if (direction == MoveDirection.Right && currentSiblingIndex < numSiblings - 3)
+        {
+            element.SetSiblingIndex(currentSiblingIndex + 1);
+        }
     }
 
     private void ShowLoadPanel()
@@ -210,6 +224,7 @@ public class Engine : MonoBehaviour
         if ((sheet.ElementTypes == null || sheet.ElementTypes.Count == 0) && sheet.Chords.Count > 0)
         {
             LoadLegacyElement(sheet);
+            LoadPanel.CloseWindow();
             return;
         }
 
