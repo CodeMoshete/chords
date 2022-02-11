@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,6 +9,7 @@ public class MelodyDiagram : MonoBehaviour
     private Action<MelodyDiagram> onMelodyRemoved;
     private Action<MelodyDiagram> onMelodyDuplicated;
     private Action<Transform, MoveDirection> onElementMoved;
+    private Action<int> onInsert;
     private List<MelodyDot> melodyDots;
     private MelodyDot selectedDot;
 
@@ -22,6 +22,7 @@ public class MelodyDiagram : MonoBehaviour
     public Button MoveLeftButton;
     public Button MoveRightButton;
     public Button CancelButton;
+    public Button InsertButton;
     public Button DeleteButton;
 
     private void Update()
@@ -42,6 +43,7 @@ public class MelodyDiagram : MonoBehaviour
     public void Initialize(
         Action<MelodyDiagram> onMelodyRemoved, 
         Action<MelodyDiagram> onMelodyDuplicated, 
+        Action<int> onInsert,
         Action<Transform, MoveDirection> onElementMoved)
     {
         melodyDots = new List<MelodyDot>(gameObject.GetComponentsInChildren<MelodyDot>());
@@ -53,6 +55,7 @@ public class MelodyDiagram : MonoBehaviour
 
         SetButton.onClick.AddListener(SetFretButtonPressed);
         CancelButton.onClick.AddListener(CancelFretButtonPressed);
+        InsertButton.onClick.AddListener(OnInsertPressed);
         DeleteButton.onClick.AddListener(DeleteButtonPressed);
 
         hoverListener.AddHoverListener(showDeleteButton);
@@ -60,7 +63,7 @@ public class MelodyDiagram : MonoBehaviour
 
         this.onMelodyRemoved = onMelodyRemoved;
         this.onMelodyDuplicated = onMelodyDuplicated;
-
+        this.onInsert = onInsert;
 
         MoveLeftButton.onClick.AddListener(TriggerMoveLeft);
         MoveRightButton.onClick.AddListener(TriggerMoveRight);
@@ -72,6 +75,7 @@ public class MelodyDiagram : MonoBehaviour
         DeleteButton.gameObject.SetActive(show);
         MoveLeftButton.gameObject.SetActive(show);
         MoveRightButton.gameObject.SetActive(show);
+        InsertButton.gameObject.SetActive(show);
     }
 
     public void DisplayMelody(MelodyDiagramModel melody)
@@ -140,6 +144,11 @@ public class MelodyDiagram : MonoBehaviour
     {
         Debug.Log("Dot Deleted: " + dot.name);
         dot.SetActive(false);
+    }
+
+    private void OnInsertPressed()
+    {
+        onInsert(transform.GetSiblingIndex() + 1);
     }
 
     private void DeleteButtonPressed()

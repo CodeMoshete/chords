@@ -545,6 +545,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 37449402}
     m_Modifications:
+    - target: {fileID: 3069545979041715324, guid: 8f4a7db02e5da3c458e5a595e66e44dd,
+        type: 3}
+      propertyPath: m_Text
+      value: New Tablature
+      objectReference: {fileID: 0}
     - target: {fileID: 8331937216361326372, guid: 8f4a7db02e5da3c458e5a595e66e44dd,
         type: 3}
       propertyPath: m_Name
@@ -4122,7 +4127,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 908163522}
   m_HandleRect: {fileID: 908163521}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

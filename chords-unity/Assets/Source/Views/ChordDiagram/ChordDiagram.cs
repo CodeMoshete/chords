@@ -28,6 +28,7 @@ public class ChordDiagram : MonoBehaviour
     public Button DeleteButton;
     public Button EditButton;
     public Button DuplicateButton;
+    public Button InsertButton;
     public Button MoveLeftButton;
     public Button MoveRightButton;
     public Chord CurrentChord;
@@ -36,6 +37,7 @@ public class ChordDiagram : MonoBehaviour
     private RectTransform rectTransform;
     private Action<ChordDiagram> onChordRemoved;
     private Action<ChordDiagram> onChordDuplicated;
+    private Action<int> onInsert;
     private Action<Transform, MoveDirection> onElementMoved;
 
     public ChordDiagram()
@@ -49,6 +51,7 @@ public class ChordDiagram : MonoBehaviour
         DeleteButton.onClick.AddListener(RemoveFromList);
         EditButton.onClick.AddListener(EditChord);
         DuplicateButton.onClick.AddListener(DuplicateChord);
+        InsertButton.onClick.AddListener(OnInsertPressed);
         FinishButton.onClick.AddListener(FinishAndDisplayChord);
         HoverListener.AddHoverListener(OnHoverStateChanged);
         MoveLeftButton.onClick.AddListener(TriggerMoveLeft);
@@ -65,10 +68,12 @@ public class ChordDiagram : MonoBehaviour
     public void Initialize(
         Action<ChordDiagram> onChordRemoved, 
         Action<ChordDiagram> onChordDuplicated, 
+        Action<int> onInsert,
         Action<Transform, MoveDirection> onElementMoved)
     {
         this.onChordRemoved = onChordRemoved;
         this.onChordDuplicated = onChordDuplicated;
+        this.onInsert = onInsert;
         this.onElementMoved = onElementMoved;
     }
 
@@ -77,6 +82,7 @@ public class ChordDiagram : MonoBehaviour
         DeleteButton.gameObject.SetActive(isMouseHovering);
         bool isInDisplayMode = DiagramPanel.activeSelf;
         EditButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
+        InsertButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
         DuplicateButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
         MoveLeftButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
         MoveRightButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
@@ -221,6 +227,11 @@ public class ChordDiagram : MonoBehaviour
     private void DuplicateChord()
     {
         onChordDuplicated(this);
+    }
+
+    private void OnInsertPressed()
+    {
+        onInsert(transform.GetSiblingIndex() + 1);
     }
 
     public void TriggerMoveLeft()

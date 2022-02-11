@@ -42,22 +42,27 @@ public class Engine : MonoBehaviour
         ElementSelector.ShowElementSelector();
     }
 
+    public void AddNewElement(int targetIndex = -1)
+    {
+        ElementSelector.ShowElementSelector(targetIndex);
+    }
+
     private void AddNewChord(Chord chord)
     {
         GameObject newDiagram = Instantiate<GameObject>(ChordDiagramTemplate, ScrollContainer);
         newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
         ChordDiagram diagram = newDiagram.GetComponent<ChordDiagram>();
-        diagram.Initialize(OnChordRemoved, OnChordDuplicated, MoveElement);
+        diagram.Initialize(OnChordRemoved, OnChordDuplicated, AddNewElement, MoveElement);
         diagram.DisplayChord(chord);
         chords.Add(diagram);
     }
 
-    private void AddNewChord()
+    private void AddNewChord(int targetIndex = -1)
     {
         GameObject newDiagram = Instantiate<GameObject>(ChordDiagramTemplate, ScrollContainer);
-        newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
+        newDiagram.transform.SetSiblingIndex(targetIndex >= 0 ? targetIndex : ScrollContainer.childCount - 3);
         ChordDiagram diagram = newDiagram.GetComponent<ChordDiagram>();
-        diagram.Initialize(OnChordRemoved, OnChordDuplicated, MoveElement);
+        diagram.Initialize(OnChordRemoved, OnChordDuplicated, AddNewElement, MoveElement);
         chords.Add(diagram);
     }
 
@@ -76,17 +81,17 @@ public class Engine : MonoBehaviour
         GameObject newDiagram = Instantiate<GameObject>(MelodyDiagramTemplate, ScrollContainer);
         newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
         MelodyDiagram diagram = newDiagram.GetComponent<MelodyDiagram>();
-        diagram.Initialize(OnMelodyRemoved, OnMelodyDuplicated, MoveElement);
+        diagram.Initialize(OnMelodyRemoved, OnMelodyDuplicated, AddNewElement, MoveElement);
         diagram.DisplayMelody(melody);
         melodies.Add(diagram);
     }
 
-    private void AddNewMelody()
+    private void AddNewMelody(int targetIndex = -1)
     {
         GameObject newDiagram = Instantiate<GameObject>(MelodyDiagramTemplate, ScrollContainer);
-        newDiagram.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
+        newDiagram.transform.SetSiblingIndex(targetIndex >= 0 ? targetIndex : ScrollContainer.childCount - 3);
         MelodyDiagram diagram = newDiagram.GetComponent<MelodyDiagram>();
-        diagram.Initialize(OnMelodyRemoved, OnMelodyDuplicated, MoveElement);
+        diagram.Initialize(OnMelodyRemoved, OnMelodyDuplicated, AddNewElement, MoveElement);
         melodies.Add(diagram);
     }
 
