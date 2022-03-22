@@ -25,13 +25,9 @@ public class ChordDiagram : MonoBehaviour
     public GameObject ChordDotTemplate;
     public Text FretNumLabelTop;
     public Text FretNumLabelBottom;
-    public Button DeleteButton;
-    public Button EditButton;
-    public Button DuplicateButton;
-    public Button InsertButton;
-    public Button MoveLeftButton;
-    public Button MoveRightButton;
     public Chord CurrentChord;
+
+    public SharedElementControlElements SharedElements;
 
     private List<GameObject> dots;
     private RectTransform rectTransform;
@@ -39,6 +35,7 @@ public class ChordDiagram : MonoBehaviour
     private Action<ChordDiagram> onChordDuplicated;
     private Action<int> onInsert;
     private Action<Transform, MoveDirection> onElementMoved;
+    private SharedElementControls sharedElementControls;
 
     public ChordDiagram()
     {
@@ -48,14 +45,7 @@ public class ChordDiagram : MonoBehaviour
     private void Start()
     {
         rectTransform = GetComponent<RectTransform>();
-        DeleteButton.onClick.AddListener(RemoveFromList);
-        EditButton.onClick.AddListener(EditChord);
-        DuplicateButton.onClick.AddListener(DuplicateChord);
-        InsertButton.onClick.AddListener(OnInsertPressed);
         FinishButton.onClick.AddListener(FinishAndDisplayChord);
-        HoverListener.AddHoverListener(OnHoverStateChanged);
-        MoveLeftButton.onClick.AddListener(TriggerMoveLeft);
-        MoveRightButton.onClick.AddListener(TriggerMoveRight);
 
         for (int i = 0, count = ToggleOpenButtons.Count; i < count; ++i)
         {
@@ -71,21 +61,13 @@ public class ChordDiagram : MonoBehaviour
         Action<int> onInsert,
         Action<Transform, MoveDirection> onElementMoved)
     {
+        sharedElementControls = new SharedElementControls(SharedElements, null, OnInsertPressed,
+            RemoveFromList, TriggerMoveLeft, TriggerMoveRight, DuplicateChord);
+
         this.onChordRemoved = onChordRemoved;
         this.onChordDuplicated = onChordDuplicated;
         this.onInsert = onInsert;
         this.onElementMoved = onElementMoved;
-    }
-
-    private void OnHoverStateChanged(bool isMouseHovering)
-    {
-        DeleteButton.gameObject.SetActive(isMouseHovering);
-        bool isInDisplayMode = DiagramPanel.activeSelf;
-        EditButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
-        InsertButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
-        DuplicateButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
-        MoveLeftButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
-        MoveRightButton.gameObject.SetActive(isMouseHovering && isInDisplayMode);
     }
 
     public void DisplaySetupPanel()
@@ -94,11 +76,10 @@ public class ChordDiagram : MonoBehaviour
         {
             SetupPanel.SetActive(true);
             DiagramPanel.SetActive(false);
-            OnHoverStateChanged(false);
+            sharedElementControls.IsEnabled = false;
+            sharedElementControls.ShowControls(false);
 
             EventSystem.current.SetSelectedGameObject(StringValueInputs[5].gameObject, null);
-            //EventSystem.current.SetSelectedGameObject(StringValueInputs[0].gameObject, null);
-            //StringValueInputs[0].OnPointerClick(null);
         }
     }
 
@@ -128,7 +109,8 @@ public class ChordDiagram : MonoBehaviour
         CurrentChord = chord;
         SetupPanel.SetActive(false);
         DiagramPanel.SetActive(true);
-        OnHoverStateChanged(false);
+        sharedElementControls.IsEnabled = true;
+        sharedElementControls.ShowControls(false);
 
         BaseBoard.SetActive(chord.FirstFretNum == 1);
         ChordNameField.text = chord.ChordName;
@@ -205,7 +187,8 @@ public class ChordDiagram : MonoBehaviour
         ChordNameInput.text = CurrentChord.ChordName;
         SetupPanel.SetActive(true);
         DiagramPanel.SetActive(false);
-        OnHoverStateChanged(false);
+        sharedElementControls.IsEnabled = false;
+        sharedElementControls.ShowControls(false);
     }
 
     private void SetupToggleOnOffButton(Button button, int index)
@@ -253,6 +236,6 @@ public class ChordDiagram : MonoBehaviour
 
     private void OnDestroy()
     {
-        HoverListener.RemoveHoverListener(OnHoverStateChanged);
+        sharedElementControls.Destroy();
     }
 }

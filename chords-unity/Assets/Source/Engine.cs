@@ -7,6 +7,7 @@ public class Engine : MonoBehaviour
     public Button AddNewButton;
     public GameObject ChordDiagramTemplate;
     public GameObject MelodyDiagramTemplate;
+    public GameObject LabelTemplate;
     public Transform ScrollContainer;
 
     public Button ClearButton;
@@ -22,13 +23,15 @@ public class Engine : MonoBehaviour
 
     private List<ChordDiagram> chords;
     private List<MelodyDiagram> melodies;
+    private List<LabelElement> labels;
     private string currentSheetName;
 
     private void Start()
     {
-        ElementSelector.Initialize(AddNewChord, AddNewMelody);
+        ElementSelector.Initialize(AddNewChord, AddNewMelody, AddNewLabel);
         chords = new List<ChordDiagram>();
         melodies = new List<MelodyDiagram>();
+        labels = new List<LabelElement>();
         AddNewButton.onClick.AddListener(AddNewElement);
         SavePanel.Initialize(SaveCurrentChords);
         LoadPanel.Initialize(LoadElements);
@@ -105,10 +108,35 @@ public class Engine : MonoBehaviour
         AddNewMelody(diagram.CurrentMelody);
     }
 
+    private void AddNewLabel(string labelContent)
+    {
+        GameObject newLabel = Instantiate<GameObject>(LabelTemplate, ScrollContainer);
+        newLabel.transform.SetSiblingIndex(ScrollContainer.childCount - 3);
+        LabelElement label = newLabel.GetComponent<LabelElement>();
+        label.Initialize(OnLabelRemoved, AddNewElement, MoveElement);
+        label.DisplayLabel(labelContent);
+        labels.Add(label);
+    }
+
+    private void AddNewLabel(int targetIndex = -1)
+    {
+        GameObject newLabel = Instantiate<GameObject>(LabelTemplate, ScrollContainer);
+        newLabel.transform.SetSiblingIndex(targetIndex >= 0 ? targetIndex : ScrollContainer.childCount - 3);
+        LabelElement label = newLabel.GetComponent<LabelElement>();
+        label.Initialize(OnLabelRemoved, AddNewElement, MoveElement);
+        labels.Add(label);
+    }
+
+    private void OnLabelRemoved(LabelElement label)
+    {
+        labels.Remove(label);
+    }
+
     private void ClearAll()
     {
         ClearMelodies();
         ClearChords();
+        ClearLabels();
     }
 
     private void ClearChords()
@@ -127,6 +155,15 @@ public class Engine : MonoBehaviour
             Destroy(melodies[i].gameObject);
         }
         melodies = new List<MelodyDiagram>();
+    }
+
+    private void ClearLabels()
+    {
+        for (int i = 0, count = labels.Count; i < count; ++i)
+        {
+            Destroy(labels[i].gameObject);
+        }
+        labels = new List<LabelElement>();
     }
 
     private void MoveElement(Transform element, MoveDirection direction)
@@ -164,6 +201,7 @@ public class Engine : MonoBehaviour
         ChordSheet newSheet = new ChordSheet();
         newSheet.Chords = new List<Chord>();
         newSheet.MelodyDiagrams = new List<MelodyDiagramModel>();
+        newSheet.Labels = new List<string>();
         newSheet.ElementTypesInt = new List<int>();
         for (int i = 0, count = chords.Count; i < count; ++i)
         {
@@ -173,6 +211,11 @@ public class Engine : MonoBehaviour
         for (int i = 0, count = melodies.Count; i < count; ++i)
         {
             newSheet.MelodyDiagrams.Add(melodies[i].GetModel());
+        }
+        
+        for (int i = 0, count = labels.Count; i < count; ++i)
+        {
+            newSheet.Labels.Add(labels[i].LabelField.text);
         }
 
         int numChildren = ScrollContainer.childCount;
@@ -186,6 +229,10 @@ public class Engine : MonoBehaviour
             else if (child.GetComponent<MelodyDiagram>() != null)
             {
                 newSheet.ElementTypesInt.Add((int)ElementType.Melody);
+            }
+            else if (child.GetComponent<LabelElement>() != null)
+            {
+                newSheet.ElementTypesInt.Add((int)ElementType.Label);
             }
         }
 
@@ -235,6 +282,7 @@ public class Engine : MonoBehaviour
 
         int chordIndex = 0;
         int melodyIndex = 0;
+        int labelIndex = 0;
         for (int i = 0, count = sheet.ElementTypes.Count; i < count; ++i)
         {
             switch (sheet.ElementTypes[i])
@@ -246,6 +294,10 @@ public class Engine : MonoBehaviour
                 case ElementType.Melody:
                     AddNewMelody(sheet.MelodyDiagrams[melodyIndex]);
                     melodyIndex++;
+                    break;
+                case ElementType.Label:
+                    AddNewLabel(sheet.Labels[labelIndex]);
+                    labelIndex++;
                     break;
             }
 

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 public enum ElementType
 {
     Chord,
-    Melody
+    Melody,
+    Label
 }
 
 [Serializable]
@@ -33,4 +34,5 @@ public class ChordSheet
     public List<int> ElementTypesInt;
     public List<Chord> Chords;
     public List<MelodyDiagramModel> MelodyDiagrams;
+    public List<string> Labels;
 }

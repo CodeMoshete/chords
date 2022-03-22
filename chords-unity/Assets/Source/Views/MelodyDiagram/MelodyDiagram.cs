@@ -12,6 +12,7 @@ public class MelodyDiagram : MonoBehaviour
     private Action<int> onInsert;
     private List<MelodyDot> melodyDots;
     private MelodyDot selectedDot;
+    private SharedElementControls sharedElementControls;
 
     public MelodyDiagramModel CurrentMelody { get; private set; }
 
@@ -19,11 +20,8 @@ public class MelodyDiagram : MonoBehaviour
     public GameObject FretEnterPanel;
     public InputField FretInput;
     public Button SetButton;
-    public Button MoveLeftButton;
-    public Button MoveRightButton;
     public Button CancelButton;
-    public Button InsertButton;
-    public Button DeleteButton;
+    public SharedElementControlElements SharedElements;
 
     private void Update()
     {
@@ -53,29 +51,17 @@ public class MelodyDiagram : MonoBehaviour
             melodyDots[i].OnDotDeleted = OnDotDeleted;
         }
 
+        sharedElementControls = new SharedElementControls(SharedElements, null, OnInsertPressed, 
+            DeleteButtonPressed, TriggerMoveLeft, TriggerMoveRight, null);
+
         SetButton.onClick.AddListener(SetFretButtonPressed);
         CancelButton.onClick.AddListener(CancelFretButtonPressed);
-        InsertButton.onClick.AddListener(OnInsertPressed);
-        DeleteButton.onClick.AddListener(DeleteButtonPressed);
-
-        hoverListener.AddHoverListener(showDeleteButton);
-        showDeleteButton(false);
 
         this.onMelodyRemoved = onMelodyRemoved;
         this.onMelodyDuplicated = onMelodyDuplicated;
         this.onInsert = onInsert;
 
-        MoveLeftButton.onClick.AddListener(TriggerMoveLeft);
-        MoveRightButton.onClick.AddListener(TriggerMoveRight);
         this.onElementMoved = onElementMoved;
-    }
-
-    private void showDeleteButton(bool show)
-    {
-        DeleteButton.gameObject.SetActive(show);
-        MoveLeftButton.gameObject.SetActive(show);
-        MoveRightButton.gameObject.SetActive(show);
-        InsertButton.gameObject.SetActive(show);
     }
 
     public void DisplayMelody(MelodyDiagramModel melody)
@@ -153,7 +139,13 @@ public class MelodyDiagram : MonoBehaviour
 
     private void DeleteButtonPressed()
     {
+        sharedElementControls.Destroy();
         onMelodyRemoved(this);
         Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        sharedElementControls.Destroy();
     }
 }

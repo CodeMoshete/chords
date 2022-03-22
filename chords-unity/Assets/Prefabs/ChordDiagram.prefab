@@ -5894,12 +5894,6 @@ MonoBehaviour:
     type: 3}
   FretNumLabelTop: {fileID: 8331937216132414953}
   FretNumLabelBottom: {fileID: 8331937214695396155}
-  DeleteButton: {fileID: 1188163860578341714}
-  EditButton: {fileID: 662645729166492729}
-  DuplicateButton: {fileID: 5731690504769519018}
-  InsertButton: {fileID: 5477128419181031309}
-  MoveLeftButton: {fileID: 6028390437658976598}
-  MoveRightButton: {fileID: 3491233109834200824}
   CurrentChord:
     StringValues: 
     ChordName: 
@@ -5907,6 +5901,14 @@ MonoBehaviour:
     LowestFretIndex: 0
     LowestFretNum: 0
     isInitialized: 0
+  SharedElements:
+    MoveLeftButton: {fileID: 6028390437658976598}
+    MoveRightButton: {fileID: 3491233109834200824}
+    EditButton: {fileID: 662645729166492729}
+    InsertButton: {fileID: 5477128419181031309}
+    DeleteButton: {fileID: 1188163860578341714}
+    DuplicateButton: {fileID: 5731690504769519018}
+    HoverListener: {fileID: 4640320653178857868}
 --- !u!1 &8581056621850609165
 GameObject:
   m_ObjectHideFlags: 0

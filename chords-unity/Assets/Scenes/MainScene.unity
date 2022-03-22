@@ -3534,6 +3534,8 @@ MonoBehaviour:
     type: 3}
   MelodyDiagramTemplate: {fileID: 8331937216361326372, guid: 15ff9ed82a8f395469c0f7fd7ac046a8,
     type: 3}
+  LabelTemplate: {fileID: 8331937216361326372, guid: ef9dca87ac85eaa4fb39dd9d2cbb9f70,
+    type: 3}
   ScrollContainer: {fileID: 37449402}
   ClearButton: {fileID: 53245961}
   LoadButton: {fileID: 453014205}
@@ -4127,7 +4129,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 908163522}
   m_HandleRect: {fileID: 908163521}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

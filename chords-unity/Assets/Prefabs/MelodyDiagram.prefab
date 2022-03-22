@@ -2141,11 +2141,14 @@ MonoBehaviour:
   FretEnterPanel: {fileID: 3438540661654225635}
   FretInput: {fileID: 2580820173481641866}
   SetButton: {fileID: 4400645840481417636}
-  MoveLeftButton: {fileID: 8176617535472210309}
-  MoveRightButton: {fileID: 8411581359028940571}
   CancelButton: {fileID: 5271286160931225300}
-  InsertButton: {fileID: 571044981637175184}
-  DeleteButton: {fileID: 1188163860578341714}
+  SharedElements:
+    MoveLeftButton: {fileID: 8176617535472210309}
+    MoveRightButton: {fileID: 8411581359028940571}
+    EditButton: {fileID: 0}
+    InsertButton: {fileID: 571044981637175184}
+    DeleteButton: {fileID: 1188163860578341714}
+    HoverListener: {fileID: 99686697270683769}
 --- !u!1 &8601646962664759141
 GameObject:
   m_ObjectHideFlags: 0
