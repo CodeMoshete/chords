@@ -61,7 +61,7 @@ public class ChordDiagram : MonoBehaviour
         Action<int> onInsert,
         Action<Transform, MoveDirection> onElementMoved)
     {
-        sharedElementControls = new SharedElementControls(SharedElements, null, OnInsertPressed,
+        sharedElementControls = new SharedElementControls(SharedElements, EditChord, OnInsertPressed,
             RemoveFromList, TriggerMoveLeft, TriggerMoveRight, DuplicateChord);
 
         this.onChordRemoved = onChordRemoved;
